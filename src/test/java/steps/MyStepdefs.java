@@ -7,11 +7,9 @@ import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import org.junit.Assert;
-import org.openqa.selenium.By;
-import org.openqa.selenium.Keys;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -21,6 +19,7 @@ import java.util.concurrent.TimeUnit;
 public class MyStepdefs extends MyHandlers {
     public WebDriver driver;
     public WebDriverWait wait;
+    public Actions action;
     private static int total;
 
 
@@ -31,6 +30,7 @@ public class MyStepdefs extends MyHandlers {
         driver.manage().window().maximize();
         driver.manage().timeouts().implicitlyWait(5000, TimeUnit.MILLISECONDS);
         wait = new WebDriverWait(driver, 5000);
+        action = new Actions(driver);
         driver.get("http://invitro.ru/");
 
     }
@@ -40,7 +40,8 @@ public class MyStepdefs extends MyHandlers {
     public void navigateToPage(String url) {
         driver.navigate().to(url);
         try {
-            driver.findElement(By.xpath("//div[@class='close-block']")).click();
+            ((JavascriptExecutor) driver).executeScript("arguments[0].click();",
+                    driver.findElement(By.xpath("//div[@class=\"close-block\"]")));
             driver.findElement(By.cssSelector(".attention-close-button")).click();
             driver.findElement(By.cssSelector(".btn--narrow.city__confirm-btn")).click();
         } catch (Exception e) {
@@ -91,7 +92,6 @@ public class MyStepdefs extends MyHandlers {
 
     @When("^Нажать кнопку \"Получить результаты анализов\"$")
     public void pressGetAnalyzesButton() {
-        driver.findElement(By.xpath("//div[@class='close-block']")).click();
         driver.findElement(By.xpath("//button[@data-mfp-src='#popupResult']")).click();
     }
 
@@ -146,8 +146,8 @@ public class MyStepdefs extends MyHandlers {
 
     @When("^Перейти в корзину$")
     public void goToBasket() {
-            //driver.findElement(By.xpath("//a[@href='/personal/basket/']")).click();
-        driver.navigate().to("https://www.invitro.ru/personal/basket/");
+        driver.findElement(By.xpath("//a[@href='/personal/basket/']")).click();
+        //driver.navigate().to("https://www.invitro.ru/personal/basket/");
         }
 
 
