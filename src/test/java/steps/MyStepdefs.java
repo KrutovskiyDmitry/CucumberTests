@@ -2,14 +2,11 @@ package steps;
 
 import cucumber.api.java.After;
 import cucumber.api.java.Before;
+import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
-import org.junit.AfterClass;
 import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
@@ -32,8 +29,8 @@ public class MyStepdefs extends MyHandlers {
         System.setProperty("webdriver.chrome.driver", "src/test/resources/chromedriver.exe");
         driver = new ChromeDriver();
         driver.manage().window().maximize();
-        driver.manage().timeouts().implicitlyWait(15000, TimeUnit.MILLISECONDS);
-        wait = new WebDriverWait(driver, 15000);
+        driver.manage().timeouts().implicitlyWait(5000, TimeUnit.MILLISECONDS);
+        wait = new WebDriverWait(driver, 5000);
         driver.get("http://invitro.ru/");
 
     }
@@ -43,6 +40,7 @@ public class MyStepdefs extends MyHandlers {
     public void navigateToPage(String url) {
         driver.navigate().to(url);
         try {
+            driver.findElement(By.xpath("//div[@class='close-block']")).click();
             driver.findElement(By.cssSelector(".attention-close-button")).click();
             driver.findElement(By.cssSelector(".btn--narrow.city__confirm-btn")).click();
         } catch (Exception e) {
@@ -56,7 +54,7 @@ public class MyStepdefs extends MyHandlers {
         List<WebElement> elementList  =driver
                 .findElements(By.xpath("//ul[@class='side-bar-second__list']/descendant::a"));
         int numberOfListElements = elementList.size();
-//передор списка элементов меню и обновление списка, т.к. перестраивается DOM после каждого обносления страницы
+//перебор списка элементов меню и обновление списка, т.к. перестраивается DOM после каждого обносления страницы
         for (int i = 0; i < numberOfListElements ; i++){
             elementList.get(i).click();
             elementList = driver.findElements(By.xpath("//ul[@class='side-bar-second__list']/descendant::a"));
@@ -93,6 +91,7 @@ public class MyStepdefs extends MyHandlers {
 
     @When("^Нажать кнопку \"Получить результаты анализов\"$")
     public void pressGetAnalyzesButton() {
+        driver.findElement(By.xpath("//div[@class='close-block']")).click();
         driver.findElement(By.xpath("//button[@data-mfp-src='#popupResult']")).click();
     }
 
@@ -147,12 +146,14 @@ public class MyStepdefs extends MyHandlers {
 
     @When("^Перейти в корзину$")
     public void goToBasket() {
-        driver.findElement(By.xpath("//a[@href='/personal/basket/']")).click();
-    }
+            //driver.findElement(By.xpath("//a[@href='/personal/basket/']")).click();
+        driver.navigate().to("https://www.invitro.ru/personal/basket/");
+        }
+
 
     @When("^Сравнить стоимость услуги и стоимость заказа в корзине$")
     public void compareTotalAndBusket() {
-        //refineAndParse убирает лишние символы из цены услуги и приводиn к типу int
+        //refineAndParse убирает лишние символы из цены услуги и приводит к типу int
         int basket = refineAndParse(driver.findElement(By.xpath("//div[@class='total-price-price']")));
         Assert.assertEquals(total, basket);
     }
@@ -173,4 +174,9 @@ public class MyStepdefs extends MyHandlers {
     public void finishFeature() {
         driver.quit();
     }
- }
+
+    @And("^Найти (.*)")
+    public void searchForService(String service) {
+        driver.findElement(By.xpath("//input[@name='q']")).sendKeys(service, Keys.ENTER);
+    }
+}
